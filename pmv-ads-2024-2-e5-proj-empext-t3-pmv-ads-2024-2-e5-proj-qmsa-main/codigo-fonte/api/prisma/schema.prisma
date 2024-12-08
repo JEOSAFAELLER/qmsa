@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String       @id @unique @default(uuid())
+  name       String
+  email      String       @unique
+  password   String
+  createdAt  DateTime     @default(now())
+  timeStamp  TimeStamp[]
+  client     Client[]
+  activities Activities[]
+}
+
+model Client {
+  id             String      @id @unique @default(uuid())
+  cnpj           String      @unique
+  insc_est       String // melhorar esse nome de campo
+  company_name   String
+  zip_code       String
+  email          String?
+  uf             String
+  telefone       String?
+  city           String
+  district       String
+  street         String?
+  company_number String
+  hour_value     Decimal     @db.Decimal(10, 2)
+  observation    String?
+  TimeStamp      TimeStamp[]
+  User           User?       @relation(fields: [userEmail], references: [email])
+  userEmail      String?
+  createdAt      DateTime    @default(now())
+}
+
+model TimeStamp {
+  id        String @id @unique @default(uuid())
+  //Relação para usuario
+  userEmail String
+  User      User?  @relation(fields: [userEmail], references: [email])
+
+  date_time_stamp DateTime @db.Date
+
+  //Relação para cliente
+  clientId String?
+  Client   Client? @relation(fields: [clientId], references: [id])
+
+  companyName String
+
+  initHour DateTime @db.Time()
+  endHour  DateTime @db.Time()
+
+  local String
+
+  project String
+
+  activities            Activities? @relation(fields: [activitiesDescription], references: [description])
+  activitiesDescription String?
+
+  userFunction String
+
+  observations String
+
+  hours_worked DateTime @db.Time()
+
+  createdAt DateTime @default(now())
+}
+
+model Activities {
+  id String @id @unique @default(uuid())
+
+  userEmail String
+  User      User?  @relation(fields: [userEmail], references: [email])
+
+  description String @unique
+
+  createdAt DateTime @default(now())
+
+  TimeStamp TimeStamp[]
+}

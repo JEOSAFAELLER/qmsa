@@ -1,0 +1,26 @@
+
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: mysql_local
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: consultancy
+      MYSQL_USER: mysqlDB
+      MYSQL_PASSWORD: mysqlPW
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - local_network
+    restart: always # Para garantir que o container reinicie automaticamente em caso de falhas
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  local_network:
+    driver: bridge
